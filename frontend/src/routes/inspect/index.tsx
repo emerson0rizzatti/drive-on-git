@@ -1,0 +1,32 @@
+import { createFileRoute, notFound } from '@tanstack/react-router';
+import { Box } from '@mui/material';
+import React from 'react';
+import SuspenseLoader from '../../components/SuspenseLoader';
+
+const FileInspectorReport = React.lazy(() => import('../../features/file-inspector/components/FileInspectorReport'));
+
+type SearchParams = {
+  folderId: string;
+};
+
+export const Route = createFileRoute('/inspect/')({
+  component: InspectPage,
+  validateSearch: (search: Record<string, unknown>): SearchParams => {
+    if (typeof search.folderId !== 'string') {
+      throw notFound();
+    }
+    return { folderId: search.folderId };
+  },
+});
+
+function InspectPage() {
+  const { folderId } = Route.useSearch();
+
+  return (
+    <Box sx={{ p: 2 }}>
+      <React.Suspense fallback={<SuspenseLoader message="Inspecting Drive folder deeply... This might take a minute." minHeight={400} />}>
+        <FileInspectorReport folderId={folderId} />
+      </React.Suspense>
+    </Box>
+  );
+}

@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: drive-on-git-frontend
+    env: static
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+    routes:
+      # Catch-all route to serve index.html for React Router (TanStack Router) SPA routing
+      - type: rewrite
+        source: /*
+        destination: /index.html
