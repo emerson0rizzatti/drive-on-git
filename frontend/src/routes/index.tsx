@@ -17,7 +17,7 @@ function Index() {
           Drive on Git
         </Typography>
         <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto', mb: 4 }}>
-          Clone easily your Google Drive folders into new or existing GitHub repositories.
+          Clone facilmente suas pastas do Google Drive para repositórios novos ou existentes do GitHub.
         </Typography>
 
         {/* Dedicatória */}
@@ -55,7 +55,7 @@ function Index() {
             }}
           >
             <Avatar 
-              src="https://unavatar.io/instagram/anitarizzatti" 
+              src="/anita.jpg" 
               alt="Anita Rizzatti" 
               sx={{ width: 64, height: 64, border: '3px solid #1e293b' }}
             />

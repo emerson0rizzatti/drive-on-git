@@ -30,7 +30,7 @@ export const FolderLinkInput: React.FC = () => {
   const handleContinue = useCallback(() => {
     const folderId = extractFolderId(link);
     if (!folderId) {
-      setError('Invalid Google Drive folder link or ID.');
+      setError('Link ou ID da pasta do Google Drive inválido.');
       return;
     }
     setError('');
@@ -40,12 +40,12 @@ export const FolderLinkInput: React.FC = () => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, maxWidth: 500, mx: 'auto', mt: 4 }}>
       <Typography variant="body1" color="text.secondary">
-        Paste the Google Drive folder link below. Make sure it's a folder, not a single file.
+        Cole o link da pasta do Google Drive abaixo. Certifique-se de que é uma pasta, não um arquivo individual.
       </Typography>
       
       <TextField
         fullWidth
-        label="Google Drive Folder URL"
+        label="URL da Pasta do Google Drive"
         variant="outlined"
         placeholder="https://drive.google.com/drive/folders/1a2b3c..."
         value={link}
@@ -64,7 +64,7 @@ export const FolderLinkInput: React.FC = () => {
         onClick={handleContinue}
         disabled={!link.trim()}
       >
-        Continue
+        Continuar
       </Button>
     </Box>
   );

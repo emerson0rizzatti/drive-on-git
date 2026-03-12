@@ -54,7 +54,7 @@ const CustomAppBar: React.FC = memo(() => {
                 '&:hover': { color: 'primary.light' }
               }}
             >
-              My Repositories
+              Meus Repositórios
             </Box>
             <AuthStatusBadge />
           </Box>

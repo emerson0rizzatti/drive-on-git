@@ -48,16 +48,16 @@ function ConfirmPage() {
   return (
     <Box sx={{ p: 2, maxWidth: 600, mx: 'auto', mt: 4 }}>
       <Typography variant="h4" fontWeight={600} gutterBottom textAlign="center">
-        4. Ready to Clone
+        4. Pronto para Clonar
       </Typography>
 
       <Paper sx={{ p: 4, my: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Typography variant="h6" color="primary">Source: {folderName}</Typography>
-        <Typography variant="h6" color="secondary">Target: {repoOwner}/{repoName}</Typography>
+        <Typography variant="h6" color="primary">Origem: {folderName}</Typography>
+        <Typography variant="h6" color="secondary">Destino: {repoOwner}/{repoName}</Typography>
         
         {startCloneMutation.isError && (
           <Alert severity="error">
-            Failed to start cloning process. Verify permissions and limitations.
+            Falha ao iniciar o processo de clonagem. Verifique permissões e limitações.
           </Alert>
         )}
 
@@ -69,10 +69,10 @@ function ConfirmPage() {
           onClick={handleStartProcess}
           sx={{ mt: 2, py: 1.5, fontSize: '1.1rem' }}
         >
-          {startCloneMutation.isPending ? 'Starting Engine...' : 'Confirm and Start Cloning'}
+          {startCloneMutation.isPending ? 'Iniciando Motor...' : 'Confirmar e Iniciar Clonagem'}
         </Button>
         <Button variant="outlined" onClick={() => window.history.back()}>
-          Go Back
+          Voltar
         </Button>
       </Paper>
     </Box>

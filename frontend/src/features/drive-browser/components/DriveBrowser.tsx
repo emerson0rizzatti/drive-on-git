@@ -38,14 +38,14 @@ const FolderContentsBrowser: React.FC<{
             </ListItemIcon>
             <ListItemText 
               primary={file.name} 
-              secondary="Files cannot be browsed, only folders can be selected as source" 
+              secondary="Arquivos não podem ser navegados, apenas pastas podem ser selecionadas como origem" 
             />
           </ListItemButton>
         </ListItem>
       ))}
       {data.folders.length === 0 && data.files.length === 0 && (
         <Box p={3} textAlign="center">
-          <Typography color="text.secondary">This folder is empty.</Typography>
+          <Typography color="text.secondary">Esta pasta está vazia.</Typography>
         </Box>
       )}
     </List>
@@ -89,7 +89,7 @@ export const DriveBrowser: React.FC = () => {
             color={breadcrumbs.length === 0 ? 'text.primary' : 'inherit'}
             underline={breadcrumbs.length === 0 ? 'none' : 'hover'}
           >
-            My Drive (Root)
+            Meu Drive (Raiz)
           </Link>
           {breadcrumbs.map((crumb, index) => {
             const isLast = index === breadcrumbs.length - 1;
@@ -110,7 +110,7 @@ export const DriveBrowser: React.FC = () => {
 
         {currentFolderId && (
           <Button variant="contained" size="small" onClick={handleConfirmSelection} color="secondary">
-            Clone this folder
+            Clonar esta pasta
           </Button>
         )}
       </Paper>
@@ -118,7 +118,7 @@ export const DriveBrowser: React.FC = () => {
       {/* Folder Contents */}
       <Paper sx={{ maxHeight: '60vh', overflow: 'auto' }}>
         {currentFolderId ? (
-          <React.Suspense fallback={<Box p={4} textAlign="center"><Typography>Loading folder...</Typography></Box>}>
+          <React.Suspense fallback={<Box p={4} textAlign="center"><Typography>Carregando pasta...</Typography></Box>}>
             <FolderContentsBrowser folderId={currentFolderId} onSelectFolder={handleSelectFolder} />
           </React.Suspense>
         ) : (
@@ -135,7 +135,7 @@ export const DriveBrowser: React.FC = () => {
             ))}
             {rootFolders.length === 0 && (
               <Box p={3} textAlign="center">
-                <Typography color="text.secondary">No folders found in root.</Typography>
+                <Typography color="text.secondary">Nenhuma pasta encontrada na raiz.</Typography>
               </Box>
             )}
           </List>

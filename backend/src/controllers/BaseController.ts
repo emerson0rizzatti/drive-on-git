@@ -10,10 +10,26 @@ export abstract class BaseController {
     this.handleSuccess(res, data, 201);
   }
 
-  protected handleError(error: unknown, res: Response, context: string): void {
+  protected handleError(error: any, res: Response, context: string): void {
     Sentry.captureException(error, { tags: { context } });
+    
+    // Log detailed axios error if present
+    if (error.response) {
+      console.error(`[BaseController] Axios Error in ${context}:`, {
+        status: error.response.status,
+        data: error.response.data,
+      });
+    } else {
+      console.error(`[BaseController] Error in ${context}:`, error);
+    }
 
-    if (error instanceof Error) {
+    if (error.response) {
+      res.status(error.response.status).json({ 
+        success: false, 
+        error: error.message,
+        details: error.response.data 
+      });
+    } else if (error instanceof Error) {
       const statusCode = this.getStatusCode(error);
       res.status(statusCode).json({ success: false, error: error.message });
     } else {
@@ -21,11 +37,14 @@ export abstract class BaseController {
     }
   }
 
-  private getStatusCode(error: Error): number {
-    if (error.message.includes('Unauthorized') || error.message.includes('authentication')) return 401;
-    if (error.message.includes('Forbidden') || error.message.includes('permission')) return 403;
-    if (error.message.includes('Not found') || error.message.includes('not found')) return 404;
-    if (error.message.includes('validation') || error.message.includes('invalid')) return 422;
+  private getStatusCode(error: any): number {
+    if (error.response) {
+      return error.response.status;
+    }
+    if (error.message?.includes('Unauthorized') || error.message?.includes('authentication')) return 401;
+    if (error.message?.includes('Forbidden') || error.message?.includes('permission')) return 403;
+    if (error.message?.includes('Not found') || error.message?.includes('not found')) return 404;
+    if (error.message?.includes('validation') || error.message?.includes('invalid')) return 422;
     return 500;
   }
 }

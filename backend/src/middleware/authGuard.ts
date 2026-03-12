@@ -21,7 +21,7 @@ export interface AuthenticatedSession {
 export function authGuard(req: Request, res: Response, next: NextFunction): void {
   const session = req.session as AuthenticatedSession;
   if (!session?.googleAccessToken || !session?.githubAccessToken) {
-    res.status(401).json({ error: 'Unauthorized', message: 'Both Google and GitHub authentication are required' });
+    res.status(401).json({ error: 'Unauthorized', message: 'É necessária a autenticação tanto no Google quanto no GitHub' });
     return;
   }
   next();
@@ -30,7 +30,7 @@ export function authGuard(req: Request, res: Response, next: NextFunction): void
 export function googleAuthGuard(req: Request, res: Response, next: NextFunction): void {
   const session = req.session as AuthenticatedSession;
   if (!session?.googleAccessToken) {
-    res.status(401).json({ error: 'Unauthorized', message: 'Google authentication is required' });
+    res.status(401).json({ error: 'Unauthorized', message: 'A autenticação no Google é necessária' });
     return;
   }
   next();
@@ -39,7 +39,7 @@ export function googleAuthGuard(req: Request, res: Response, next: NextFunction)
 export function githubAuthGuard(req: Request, res: Response, next: NextFunction): void {
   const session = req.session as AuthenticatedSession;
   if (!session?.githubAccessToken) {
-    res.status(401).json({ error: 'Unauthorized', message: 'GitHub authentication is required' });
+    res.status(401).json({ error: 'Unauthorized', message: 'A autenticação no GitHub é necessária' });
     return;
   }
   next();

@@ -10,10 +10,10 @@ export const OriginSelector: React.FC = () => {
   return (
     <Box sx={{ width: '100%' }}>
       <Typography variant="h5" fontWeight={600} gutterBottom>
-        1. Select Origin
+        1. Selecionar Origem
       </Typography>
       <Typography variant="body1" color="text.secondary" mb={3}>
-        Choose the Google Drive folder you want to clone to GitHub.
+        Escolha a pasta do Google Drive que você deseja clonar para o GitHub.
       </Typography>
 
       <Paper sx={{ mb: 3 }}>
@@ -24,15 +24,15 @@ export const OriginSelector: React.FC = () => {
           textColor="primary"
           indicatorColor="primary"
         >
-          <Tab label="Paste Folder Link" />
-          <Tab label="Browse My Drive" />
+          <Tab label="Colar Link da Pasta" />
+          <Tab label="Navegar no Meu Drive" />
         </Tabs>
       </Paper>
 
       <Box sx={{ py: 2 }}>
         {tab === 0 && <FolderLinkInput />}
         {tab === 1 && (
-          <React.Suspense fallback={<SuspenseLoader message="Loading Drive folders..." minHeight={300} />}>
+          <React.Suspense fallback={<SuspenseLoader message="Carregando pastas do Drive..." minHeight={300} />}>
             <DriveBrowser />
           </React.Suspense>
         )}

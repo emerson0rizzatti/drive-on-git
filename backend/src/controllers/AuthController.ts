@@ -17,7 +17,7 @@ export class AuthController extends BaseController {
   logout(req: Request, res: Response): void {
     try {
       authService.clearSession(req.session as AuthenticatedSession);
-      this.handleSuccess(res, { message: 'Logged out successfully' });
+      this.handleSuccess(res, { message: 'Sessão encerrada com sucesso' });
     } catch (error) {
       this.handleError(error, res, 'logout');
     }

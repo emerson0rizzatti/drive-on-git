@@ -12,10 +12,10 @@ export const MyReposList: React.FC = () => {
     <Box sx={{ animation: 'fadeIn 0.3s ease-in' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h5" fontWeight={600}>
-          My Drive on Git Repositories
+          Meus Repositórios Drive on Git
         </Typography>
         <Button component={Link} to="/" variant="contained">
-          Clone New Folder
+          Clonar Nova Pasta
         </Button>
       </Box>
 
@@ -23,10 +23,10 @@ export const MyReposList: React.FC = () => {
         <Card sx={{ p: 4, textAlign: 'center' }}>
           <FolderIcon color="disabled" sx={{ fontSize: 48, mb: 1 }} />
           <Typography variant="h6" gutterBottom>
-            No cloned repositories found
+            Nenhum repositório clonado encontrado
           </Typography>
           <Typography color="text.secondary">
-            Repositories created using Drive on Git will appear here.
+            Repositórios criados usando o Drive on Git aparecerão aqui.
           </Typography>
         </Card>
       ) : (
@@ -42,9 +42,9 @@ export const MyReposList: React.FC = () => {
                     </Typography>
                   </Box>
                   {repo.private ? (
-                    <Chip label="Private" size="small" variant="outlined" />
+                    <Chip label="Privado" size="small" variant="outlined" />
                   ) : (
-                    <Chip label="Public" size="small" variant="outlined" color="success" />
+                    <Chip label="Público" size="small" variant="outlined" color="success" />
                   )}
                 </Box>
                 <Button 
@@ -55,7 +55,7 @@ export const MyReposList: React.FC = () => {
                   variant="outlined"
                   size="small"
                 >
-                  View on GitHub
+                  Ver no GitHub
                 </Button>
               </CardContent>
             </Card>

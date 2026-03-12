@@ -34,6 +34,7 @@ export class driveService {
     folderId: string,
     pageToken?: string,
   ): Promise<DriveFolderContents> {
+    console.log(`[DriveService] Listing contents for folderId: ${folderId}${pageToken ? ' (page: ' + pageToken + ')' : ''}`);
     const params: Record<string, string | number> = {
       q: `'${folderId}' in parents and trashed=false`,
       fields: 'nextPageToken,files(id,name,mimeType,size,modifiedTime,parents)',
@@ -46,6 +47,11 @@ export class driveService {
       params,
       headers: authHeader(accessToken),
     });
+
+    if (!data || !data.files) {
+      console.warn(`[DriveService] No files found for folderId in response: ${folderId}`);
+      return { folders: [], files: [], nextPageToken: undefined };
+    }
 
     const folders: DriveFolder[] = [];
     const files: DriveFile[] = [];
@@ -74,7 +80,13 @@ export class driveService {
     accessToken: string,
     folderId: string,
     basePath: string = '',
+    depth: number = 0
   ): Promise<InspectedFile[]> {
+    if (depth > 10) {
+      console.warn(`[DriveService] Max depth reached at ${basePath}. Skipping deeper traversal.`);
+      return [];
+    }
+
     const results: InspectedFile[] = [];
     let pageToken: string | undefined;
 
@@ -84,6 +96,8 @@ export class driveService {
 
       // Process files
       for (const file of contents.files) {
+        if (!file.id || !file.name) continue;
+
         const sizeBytes = parseInt(String(file.size ?? '0'), 10);
         const sizeMB = sizeBytes / (1024 * 1024);
         const filePath = basePath ? `${basePath}/${file.name}` : file.name;
@@ -94,16 +108,23 @@ export class driveService {
           path: filePath,
           sizeBytes,
           sizeMB: parseFloat(sizeMB.toFixed(2)),
-          mimeType: file.mimeType,
+          mimeType: file.mimeType || 'unknown',
           oversized: sizeBytes > FILE_SIZE_LIMIT_BYTES,
         });
       }
 
       // Recurse into subfolders
       for (const folder of contents.folders) {
+        if (!folder.id || !folder.name) continue;
+        
         const subPath = basePath ? `${basePath}/${folder.name}` : folder.name;
-        const subFiles = await this.inspectFolder(accessToken, folder.id, subPath);
-        results.push(...subFiles);
+        try {
+          const subFiles = await this.inspectFolder(accessToken, folder.id, subPath, depth + 1);
+          results.push(...subFiles);
+        } catch (err) {
+          console.error(`[DriveService] Failed to inspect subfolder ${subPath} (${folder.id}):`, err);
+          // Continue with other folders instead of failing entire inspection
+        }
       }
     } while (pageToken);
 
@@ -114,8 +135,11 @@ export class driveService {
     accessToken: string,
     folderId: string,
   ): Promise<FolderInspectionResult> {
+    console.log(`[DriveService] Starting inspection for folder: ${folderId}`);
     const folderName = await this.getFolderName(accessToken, folderId);
+    console.log(`[DriveService] Folder name: ${folderName}`);
     const allFiles = await this.inspectFolder(accessToken, folderId);
+    console.log(`[DriveService] Inspection complete. Found ${allFiles.length} files.`);
 
     const validFiles = allFiles.filter((f) => !f.oversized);
     const oversizedFiles = allFiles.filter((f) => f.oversized);

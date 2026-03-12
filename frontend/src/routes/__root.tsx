@@ -26,7 +26,7 @@ function RootComponent() {
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <CustomAppBar />
         <Container component="main" maxWidth="md" sx={{ flexGrow: 1, py: 4, display: 'flex', flexDirection: 'column' }}>
-          <Suspense fallback={<SuspenseLoader message="Loading Drive on Git..." />}>
+          <Suspense fallback={<SuspenseLoader message="Carregando Drive on Git..." />}>
             <Outlet />
           </Suspense>
         </Container>

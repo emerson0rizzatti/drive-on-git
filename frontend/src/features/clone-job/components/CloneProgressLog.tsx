@@ -20,7 +20,7 @@ export const CloneProgressLog: React.FC<{ jobId: string }> = ({ jobId }) => {
   if (!status) {
     return (
       <Box p={3} textAlign="center">
-        <Typography>Connecting to clone server...</Typography>
+        <Typography>Conectando ao servidor de clonagem...</Typography>
         <LinearProgress sx={{ mt: 2 }} />
       </Box>
     );
@@ -36,16 +36,16 @@ export const CloneProgressLog: React.FC<{ jobId: string }> = ({ jobId }) => {
   return (
     <Box sx={{ animation: 'fadeIn 0.3s ease-in' }}>
       <Typography variant="h5" fontWeight={600} gutterBottom>
-        Cloning to {repoOwner}/{repoName}
+        Clonando para {repoOwner}/{repoName}
       </Typography>
 
       <Paper sx={{ p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
           <Typography variant="body1" fontWeight={600}>
-            {jobStatus === 'completed' ? 'Done!' : jobStatus === 'failed' ? 'Failed' : 'Cloning in progress...'}
+            {jobStatus === 'completed' ? 'Concluído!' : jobStatus === 'failed' ? 'Falha' : 'Clonagem em progresso...'}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {progress.processedFiles} / {progress.totalFiles} files
+            {progress.processedFiles} / {progress.totalFiles} arquivos
           </Typography>
         </Box>
         <LinearProgress 
@@ -57,21 +57,21 @@ export const CloneProgressLog: React.FC<{ jobId: string }> = ({ jobId }) => {
         
         {!isDone && progress.currentFile && (
           <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }} noWrap>
-            Processing: {progress.currentFile}
+            Processando: {progress.currentFile}
           </Typography>
         )}
       </Paper>
 
       <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
-        <Chip icon={<CheckCircleOutlineIcon />} label={`${progress.successfulFiles} Success`} color="success" variant="outlined" />
-        <Chip icon={<ErrorOutlineIcon />} label={`${progress.failedFiles} Failed`} color="error" variant="outlined" />
-        <Chip icon={<WarningAmberIcon />} label={`${progress.skippedFiles} Skipped`} color="warning" variant="outlined" />
+        <Chip icon={<CheckCircleOutlineIcon />} label={`${progress.successfulFiles} Sucesso`} color="success" variant="outlined" />
+        <Chip icon={<ErrorOutlineIcon />} label={`${progress.failedFiles} Falha`} color="error" variant="outlined" />
+        <Chip icon={<WarningAmberIcon />} label={`${progress.skippedFiles} Ignorados`} color="warning" variant="outlined" />
       </Box>
 
       {errors.length > 0 && (
         <Paper sx={{ borderColor: 'error.main', borderWidth: 1, borderStyle: 'solid', overflow: 'hidden' }}>
           <Box sx={{ bgcolor: 'error.main', color: 'error.contrastText', p: 1, px: 2 }}>
-            <Typography variant="subtitle2" fontWeight={600}>Error Logs</Typography>
+            <Typography variant="subtitle2" fontWeight={600}>Logs de Erro</Typography>
           </Box>
           <List disablePadding sx={{ maxHeight: 200, overflow: 'auto' }}>
             {errors.map((err, i) => (
@@ -91,7 +91,7 @@ export const CloneProgressLog: React.FC<{ jobId: string }> = ({ jobId }) => {
         <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
           <Link to="/my-repos" style={{ textDecoration: 'none' }}>
             <Typography variant="button" sx={{ bgcolor: 'primary.main', color: 'white', px: 4, py: 1.5, borderRadius: 2, fontWeight: 600 }}>
-              Go to My Repositories
+              Ir para Meus Repositórios
             </Typography>
           </Link>
         </Box>

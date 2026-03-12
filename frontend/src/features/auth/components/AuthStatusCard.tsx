@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Box, Button, Card, CardContent, Typography, Divider, CircularProgress } from '@mui/material';
+import { Box, Button, Card, CardContent, Typography, Divider } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -32,14 +32,14 @@ export const AuthStatusCard: React.FC = () => {
     <Card sx={{ maxWidth: 500, width: '100%', mx: 'auto' }}>
       <CardContent sx={{ p: 4 }}>
         <Typography variant="h5" align="center" gutterBottom fontWeight={600}>
-          Authentication Required
+          Autenticação Necessária
         </Typography>
         <Typography variant="body2" align="center" color="text.secondary" mb={4}>
-          You must link both your Google Drive and GitHub accounts to continue.
+          Você deve vincular suas contas do Google Drive e GitHub para continuar.
         </Typography>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          {/* Google Auth Status */}
+          {/* Status da Autenticação Google */}
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <GoogleIcon color={status.google ? 'success' : 'action'} />
@@ -48,7 +48,7 @@ export const AuthStatusCard: React.FC = () => {
                   Google Drive
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {status.google ? status.googleUser?.email || 'Connected' : 'Not connected'}
+                  {status.google ? status.googleUser?.email || 'Conectado' : 'Não conectado'}
                 </Typography>
               </Box>
             </Box>
@@ -56,14 +56,14 @@ export const AuthStatusCard: React.FC = () => {
               <CheckCircleIcon color="success" />
             ) : (
               <Button variant="contained" size="small" onClick={handleGoogleLogin}>
-                Connect
+                Conectar
               </Button>
             )}
           </Box>
 
           <Divider />
 
-          {/* GitHub Auth Status */}
+          {/* Status da Autenticação GitHub */}
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <GitHubIcon color={status.github ? 'success' : 'action'} />
@@ -72,7 +72,7 @@ export const AuthStatusCard: React.FC = () => {
                   GitHub
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {status.github ? status.githubUser?.login || 'Connected' : 'Not connected'}
+                  {status.github ? status.githubUser?.login || 'Conectado' : 'Não conectado'}
                 </Typography>
               </Box>
             </Box>
@@ -80,7 +80,7 @@ export const AuthStatusCard: React.FC = () => {
               <CheckCircleIcon color="success" />
             ) : (
               <Button variant="contained" size="small" onClick={handleGitHubLogin} color="secondary">
-                Connect
+                Conectar
               </Button>
             )}
           </Box>
@@ -96,7 +96,7 @@ export const AuthStatusCard: React.FC = () => {
               onClick={() => navigate({ to: '/browse' })}
               sx={{ py: 1.5, fontSize: '1.1rem' }}
             >
-              Start Cloning Let's Go
+              Começar Clonagem
             </Button>
           ) : (
             <Button
@@ -106,7 +106,7 @@ export const AuthStatusCard: React.FC = () => {
               onClick={handleLogout}
               sx={{ opacity: 0.7 }}
             >
-              Restart / Logout
+              Reiniciar / Sair
             </Button>
           )}
         </Box>

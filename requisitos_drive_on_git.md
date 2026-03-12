@@ -170,8 +170,11 @@ Antes de iniciar a clonagem, o sistema exibe um resumo:
 |---|---|
 | GitHub | **100 MB por arquivo** (hard limit — upload bloqueado) |
 | GitHub | **1 GB por repositório** (hard limit — repositório pode ser desativado) |
-| GitHub API | 5.000 requisições/hora (autenticado) |
 | Google Drive API | 1.000.000.000 unidades de cota/dia |
+| GitHub API | 5.000 requisições/hora (autenticado) |
+
+### RNF-06 — Idioma da Interface
+- Toda a interface com o usuário (textos, botões, mensagens de erro, alertas e logs) deve ser escrita obrigatoriamente em **Língua Portuguesa falada no Brasil (pt-BR)**.
 
 ---
 

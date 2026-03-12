@@ -8,6 +8,6 @@ export function errorHandler(
   _next: NextFunction,
 ): void {
   Sentry.captureException(err);
-  console.error('[ErrorHandler]', err.message);
+  console.error('[ErrorHandler] Error Details:', err);
   res.status(500).json({ error: 'Internal server error', message: err.message });
 }

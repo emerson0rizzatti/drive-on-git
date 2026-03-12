@@ -16,7 +16,7 @@ export const AuthStatusBadge: React.FC = () => {
 
   return (
     <Box sx={{ display: 'flex', gap: 1 }}>
-      <Tooltip title={status.google ? `Connected to Drive API as ${status.googleUser?.email}` : 'Google disconnected'}>
+      <Tooltip title={status.google ? `Conectado à API do Drive como ${status.googleUser?.email}` : 'Google desconectado'}>
         <Chip
           icon={<GoogleIcon fontSize="small" />}
           label={status.googleUser?.displayName || 'Google'}
@@ -30,7 +30,7 @@ export const AuthStatusBadge: React.FC = () => {
         />
       </Tooltip>
       
-      <Tooltip title={status.github ? `Connected to GitHub as ${status.githubUser?.login}` : 'GitHub disconnected'}>
+      <Tooltip title={status.github ? `Conectado ao GitHub como ${status.githubUser?.login}` : 'GitHub desconectado'}>
         <Chip
           icon={<GitHubIcon fontSize="small" />}
           label={status.githubUser?.login || 'GitHub'}
