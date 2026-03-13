@@ -1,13 +1,46 @@
 import React, { useState } from 'react';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Button } from '@mui/material';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Button, Alert, AlertTitle } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 import { useInspectFolder } from '../hooks/useInspectFolder';
 import LimitWarningBanner from './LimitWarningBanner';
+import SuspenseLoader from '../../../components/SuspenseLoader';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 export const FileInspectorReport: React.FC<{ folderId: string }> = ({ folderId }) => {
-  const { data } = useInspectFolder(folderId);
+  const { data, isLoading, isError, error, refetch } = useInspectFolder(folderId);
   const navigate = useNavigate();
   const [acknowledgedLimit, setAcknowledgedLimit] = useState(false);
+
+  if (isLoading) {
+    return <SuspenseLoader message="Inspecionando pastas do Drive... Isso pode levar um minuto." minHeight={400} />;
+  }
+
+  if (isError || !data) {
+    const isNotFound = (error as any)?.response?.status === 404;
+    return (
+      <Box sx={{ py: 8, textAlign: 'center', animation: 'fadeIn 0.4s ease-in' }}>
+        <Paper sx={{ p: 4, maxWidth: 500, mx: 'auto', bgcolor: 'rgba(211, 47, 47, 0.05)', border: '1px solid', borderColor: 'error.light' }}>
+          <ErrorOutlineIcon sx={{ fontSize: 64, color: 'error.main', mb: 2 }} />
+          <Typography variant="h5" fontWeight={600} gutterBottom color="error.main">
+            {isNotFound ? 'Pasta Não Encontrada' : 'Erro na Inspeção'}
+          </Typography>
+          <Typography variant="body1" color="text.secondary" mb={4}>
+            {isNotFound 
+              ? 'A pasta solicitada não existe ou você não tem permissão para acessá-la. Verifique se o ID está correto e se a pasta foi compartilhada com você.' 
+              : 'Ocorreu um problema ao tentar ler o conteúdo desta pasta no Google Drive.'}
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+            <Button variant="outlined" onClick={() => navigate({ to: '/browse' })}>
+              Voltar para Seleção
+            </Button>
+            <Button variant="contained" color="error" onClick={() => refetch()}>
+              Tentar Novamente
+            </Button>
+          </Box>
+        </Paper>
+      </Box>
+    );
+  }
 
   const canProceed = !data.exceedsRepoLimit || acknowledgedLimit;
 
