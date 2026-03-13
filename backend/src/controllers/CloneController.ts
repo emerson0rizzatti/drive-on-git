@@ -41,12 +41,45 @@ export class CloneController extends BaseController {
     res.flushHeaders();
 
     const sendEvent = () => {
-      const current = cloneService.getJob(jobId);
-      if (!current) return;
+      const job = cloneService.getJob(jobId);
+      if (!job) return;
 
-      res.write(`data: ${JSON.stringify(current)}\n\n`);
+      const successfulFiles = job.files.filter(f => f.status === 'done').length;
+      const failedFiles = job.files.filter(f => f.status === 'error').length;
+      const skippedFiles = job.files.filter(f => f.status === 'skipped').length;
+      const currentFile = job.files.find(f => f.status === 'uploading')?.filePath;
 
-      if (current.status === 'completed' || current.status === 'failed') {
+      // Map backend status to frontend status
+      let frontendStatus: 'pending' | 'inspecting' | 'processing' | 'completed' | 'failed' = 'pending';
+      if (job.status === 'running') {
+        frontendStatus = job.total === 0 ? 'inspecting' : 'processing';
+      } else if (job.status === 'completed') {
+        frontendStatus = 'completed';
+      } else if (job.status === 'failed') {
+        frontendStatus = 'failed';
+      }
+
+      const formattedStatus = {
+        jobId: job.jobId,
+        folderId: job.folderId,
+        repoOwner: job.repoOwner,
+        repoName: job.repoName,
+        status: frontendStatus,
+        progress: {
+          totalFiles: job.total,
+          processedFiles: job.current,
+          successfulFiles,
+          failedFiles,
+          skippedFiles,
+          currentFile,
+        },
+        errors: job.files.filter(f => f.error).map(f => `${f.filePath}: ${f.error}`),
+        createdAt: job.startedAt.toISOString(),
+      };
+
+      res.write(`data: ${JSON.stringify(formattedStatus)}\n\n`);
+
+      if (job.status === 'completed' || job.status === 'failed') {
         res.end();
         clearInterval(interval);
       }

@@ -39,7 +39,7 @@ function ConfirmPage() {
       { folderId, repoOwner, repoName },
       {
         onSuccess: (data) => {
-          navigate({ to: '/cloning', search: { jobId: data.jobId } } as any);
+          navigate({ to: '/cloning/', search: { jobId: data.jobId } } as any);
         },
       }
     );

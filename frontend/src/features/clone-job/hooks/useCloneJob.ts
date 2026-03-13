@@ -19,7 +19,7 @@ export const useCloneProgress = (jobId: string | null) => {
 
     // Use SSE (Server-Sent Events) via native EventSource
     // Because it goes cross-origin to the backend, we setup withCredentials to send the cookie session
-    const eventSource = new EventSource(`${env.API_URL}/clone/${jobId}/status`, {
+    const eventSource = new EventSource(`${env.API_URL}/clone/status/${jobId}`, {
       withCredentials: true,
     });
 

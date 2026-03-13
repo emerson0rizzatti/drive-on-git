@@ -21,6 +21,8 @@ export class driveService {
       q: "mimeType='application/vnd.google-apps.folder' and 'root' in parents and trashed=false",
       fields: 'files(id,name,modifiedTime)',
       pageSize: 50,
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
     };
     const { data } = await axios.get(`${DRIVE_API}/files`, {
       params,
@@ -35,11 +37,13 @@ export class driveService {
     pageToken?: string,
   ): Promise<DriveFolderContents> {
     console.log(`[DriveService] Listing contents for folderId: ${folderId}${pageToken ? ' (page: ' + pageToken + ')' : ''}`);
-    const params: Record<string, string | number> = {
+    const params: Record<string, string | number | boolean> = {
       q: `'${folderId}' in parents and trashed=false`,
       fields: 'nextPageToken,files(id,name,mimeType,size,modifiedTime,parents)',
       pageSize: 100,
       orderBy: 'name',
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
     };
     if (pageToken) params.pageToken = pageToken;
 
@@ -69,7 +73,10 @@ export class driveService {
 
   static async getFolderName(accessToken: string, folderId: string): Promise<string> {
     const { data } = await axios.get(`${DRIVE_API}/files/${folderId}`, {
-      params: { fields: 'name' },
+      params: { 
+        fields: 'name',
+        supportsAllDrives: true 
+      },
       headers: authHeader(accessToken),
     });
     return data.name as string;
@@ -161,7 +168,10 @@ export class driveService {
   // Download a file as a Buffer
   static async downloadFile(accessToken: string, fileId: string): Promise<Buffer> {
     const { data } = await axios.get(`${DRIVE_API}/files/${fileId}`, {
-      params: { alt: 'media' },
+      params: { 
+        alt: 'media',
+        supportsAllDrives: true
+      },
       headers: authHeader(accessToken),
       responseType: 'arraybuffer',
     });
