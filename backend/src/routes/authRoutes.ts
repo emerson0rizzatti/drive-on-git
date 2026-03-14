@@ -9,7 +9,7 @@ const router = express.Router();
 router.get(
   '/google',
   passport.authenticate('google', {
-    scope: ['profile', 'email', 'https://www.googleapis.com/auth/drive.readonly'],
+    scope: ['profile', 'email', 'https://www.googleapis.com/auth/drive'],
     session: false,
   }),
 );
