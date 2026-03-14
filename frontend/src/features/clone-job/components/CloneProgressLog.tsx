@@ -40,8 +40,17 @@ export const CloneProgressLog: React.FC<{ jobId: string }> = ({ jobId }) => {
   return (
     <Box sx={{ animation: 'fadeIn 0.3s ease-in' }}>
       <Typography variant="h5" fontWeight={600} gutterBottom>
-        Clonando para {repoOwner}/{repoName}
+        Clonando:
       </Typography>
+      
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="body1" color="text.secondary">
+          <strong>De:</strong> {status.folderName}
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          <strong>Para:</strong> {repoOwner}/{repoName}
+        </Typography>
+      </Box>
 
       <Paper sx={{ p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
