@@ -26,7 +26,7 @@ function InspectPage() {
 
   return (
     <Box sx={{ p: 2 }}>
-      <React.Suspense fallback={<SuspenseLoader message="Inspecting Drive folder deeply... This might take a minute." minHeight={400} />}>
+      <React.Suspense fallback={<SuspenseLoader message="Inspecionando pasta do Drive profundamente... Isso pode levar um minuto." minHeight={400} />}>
         <FileInspectorReport folderId={folderId} />
       </React.Suspense>
     </Box>
