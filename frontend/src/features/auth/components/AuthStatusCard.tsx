@@ -31,60 +31,66 @@ export const AuthStatusCard: React.FC = () => {
   return (
     <Card sx={{ maxWidth: 500, width: '100%', mx: 'auto' }}>
       <CardContent sx={{ p: 4 }}>
-        <Typography variant="h5" align="center" gutterBottom fontWeight={600}>
-          Autenticação Necessária
-        </Typography>
-        <Typography variant="body2" align="center" color="text.secondary" mb={4}>
-          Você deve vincular suas contas do Google Drive e GitHub para continuar.
-        </Typography>
+        {!bothConnected && (
+          <>
+            <Typography variant="h5" align="center" gutterBottom fontWeight={600}>
+              Autenticação Necessária
+            </Typography>
+            <Typography variant="body2" align="center" color="text.secondary" mb={4}>
+              Você deve vincular suas contas do Google Drive e GitHub para continuar.
+            </Typography>
+          </>
+        )}
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          {/* Status da Autenticação Google */}
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <GoogleIcon color={status.google ? 'success' : 'action'} />
-              <Box>
-                <Typography variant="subtitle1" fontWeight={600}>
-                  Google Drive
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {status.google ? status.googleUser?.email || 'Conectado' : 'Não conectado'}
-                </Typography>
+        {!bothConnected && (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            {/* Status da Autenticação Google */}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <GoogleIcon color={status.google ? 'success' : 'action'} />
+                <Box>
+                  <Typography variant="subtitle1" fontWeight={600}>
+                    Google Drive
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {status.google ? status.googleUser?.email || 'Conectado' : 'Não conectado'}
+                  </Typography>
+                </Box>
               </Box>
+              {status.google ? (
+                <CheckCircleIcon color="success" />
+              ) : (
+                <Button variant="contained" size="small" onClick={handleGoogleLogin}>
+                  Conectar
+                </Button>
+              )}
             </Box>
-            {status.google ? (
-              <CheckCircleIcon color="success" />
-            ) : (
-              <Button variant="contained" size="small" onClick={handleGoogleLogin}>
-                Conectar
-              </Button>
-            )}
-          </Box>
 
-          <Divider />
+            <Divider />
 
-          {/* Status da Autenticação GitHub */}
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <GitHubIcon color={status.github ? 'success' : 'action'} />
-              <Box>
-                <Typography variant="subtitle1" fontWeight={600}>
-                  GitHub
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {status.github ? status.githubUser?.login || 'Conectado' : 'Não conectado'}
-                </Typography>
+            {/* Status da Autenticação GitHub */}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <GitHubIcon color={status.github ? 'success' : 'action'} />
+                <Box>
+                  <Typography variant="subtitle1" fontWeight={600}>
+                    GitHub
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {status.github ? status.githubUser?.login || 'Conectado' : 'Não conectado'}
+                  </Typography>
+                </Box>
               </Box>
+              {status.github ? (
+                <CheckCircleIcon color="success" />
+              ) : (
+                <Button variant="contained" size="small" onClick={handleGitHubLogin} color="secondary">
+                  Conectar
+                </Button>
+              )}
             </Box>
-            {status.github ? (
-              <CheckCircleIcon color="success" />
-            ) : (
-              <Button variant="contained" size="small" onClick={handleGitHubLogin} color="secondary">
-                Conectar
-              </Button>
-            )}
           </Box>
-        </Box>
+        )}
 
         <Box sx={{ mt: 5, textAlign: 'center' }}>
           {bothConnected ? (
