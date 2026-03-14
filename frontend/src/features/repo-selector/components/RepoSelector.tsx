@@ -97,7 +97,7 @@ export const RepoSelector: React.FC<Props> = ({ folderId, folderName }) => {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, maxWidth: 500 }}>
           <Autocomplete
             options={repos}
-            getOptionLabel={(option) => option.fullName || option.name}
+            getOptionLabel={(option) => option.full_name || option.name}
             value={selectedRepo}
             onChange={(_e, newValue) => setSelectedRepo(newValue)}
             renderInput={(params) => <TextField {...params} label="Pesquisar seus repositórios" />}

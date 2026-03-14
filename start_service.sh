@@ -12,8 +12,8 @@ cleanup() {
 trap cleanup SIGINT SIGTERM
 
 echo "========================================="
-echo "Cleaning up ports (5000, 5173)..."
-fuser -k 5000/tcp 5173/tcp 2>/dev/null
+echo "Cleaning up ports (3001, 5173)..."
+fuser -k 3001/tcp 5173/tcp 2>/dev/null
 echo "Starting Drive on Git Local Environment..."
 echo "========================================="
 
@@ -29,7 +29,7 @@ cd ..
 
 echo "========================================="
 echo "Services are starting up!"
-echo "Backend is typically running on http://localhost:5000"
+echo "Backend is typically running on http://localhost:3001"
 echo "Frontend is typically running on http://localhost:5173"
 echo "Press Ctrl+C at any time to stop both services."
 echo "========================================="

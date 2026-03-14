@@ -48,7 +48,7 @@ export const MyReposList: React.FC = () => {
                   )}
                 </Box>
                 <Button 
-                  href={repo.url} 
+                  href={repo.html_url} 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   fullWidth 
