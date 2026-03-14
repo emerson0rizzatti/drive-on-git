@@ -10,7 +10,7 @@ const asyncErrorWrapper_1 = require("../middleware/asyncErrorWrapper");
 const router = express_1.default.Router();
 // Google OAuth
 router.get('/google', passport_1.default.authenticate('google', {
-    scope: ['profile', 'email', 'https://www.googleapis.com/auth/drive.readonly'],
+    scope: ['profile', 'email', 'https://www.googleapis.com/auth/drive'],
     session: false,
 }));
 router.get('/google/callback', passport_1.default.authenticate('google', { session: false, failureRedirect: '/?auth=google_error' }), (req, res) => AuthController_1.authController.googleCallback(req, res));

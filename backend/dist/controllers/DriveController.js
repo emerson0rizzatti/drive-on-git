@@ -48,15 +48,22 @@ class DriveController extends BaseController_1.BaseController {
         try {
             const { googleAccessToken } = this.getAuthSession(req);
             const { id } = req.params;
+            console.log(`[DriveController] Request to delete folder: ${id}`);
             // Safety check: verify ownership again before deletion
-            const { ownedByMe } = await driveService_1.driveService.getFolderMetadata(googleAccessToken, id);
+            const { ownedByMe, name } = await driveService_1.driveService.getFolderMetadata(googleAccessToken, id);
+            console.log(`[DriveController] Folder: ${name}, OwnedByMe: ${ownedByMe}`);
             if (!ownedByMe) {
-                return this.handleError(new Error('Apenas o proprietário da pasta tem permissão para excluí-la.'), res, 'deleteFolder');
+                console.warn(`[DriveController] Delete aborted: User is not the owner of ${id}`);
+                return this.handleError(new Error('Apenas o proprietário da pasta tem permissão para excluí-la. Operação abortada para segurança.'), res, 'deleteFolder');
             }
             await driveService_1.driveService.deleteFolder(googleAccessToken, id);
+            console.log(`[DriveController] Folder ${id} deleted successfully.`);
             this.handleSuccess(res, { message: 'Pasta excluída com sucesso.' });
         }
         catch (error) {
+            if (error.response?.status === 403) {
+                console.error('[DriveController] Google API 403: Insufficient permissions or scope.', error.response.data);
+            }
             this.handleError(error, res, 'deleteFolder');
         }
     }

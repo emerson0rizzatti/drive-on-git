@@ -2,9 +2,19 @@ import React, { memo } from 'react';
 import { AppBar, Toolbar, Typography, Container, Box } from '@mui/material';
 import { Link } from '@tanstack/react-router';
 import CloudSyncIcon from '@mui/icons-material/CloudSync';
+import LogoutIcon from '@mui/icons-material/Logout';
 import AuthStatusBadge from '../AuthStatusBadge';
+import { useLogout } from '../../features/auth/hooks/useLogout';
+import { Tooltip, Button } from '@mui/material';
 
 const CustomAppBar: React.FC = memo(() => {
+  const logoutMutation = useLogout();
+
+  const handleLogout = () => {
+    if (window.confirm('Deseja realmente sair e desconectar suas contas?')) {
+      logoutMutation.mutate();
+    }
+  };
   return (
     <AppBar position="sticky">
       <Container maxWidth="lg">
@@ -57,6 +67,30 @@ const CustomAppBar: React.FC = memo(() => {
               Meus Repositórios
             </Box>
             <AuthStatusBadge />
+            
+            <Tooltip title="Sair do Sistema">
+              <Button
+                size="small"
+                color="inherit"
+                onClick={handleLogout}
+                disabled={logoutMutation.isPending}
+                startIcon={<LogoutIcon />}
+                sx={{ 
+                  textTransform: 'none', 
+                  fontWeight: 600,
+                  ml: 1,
+                  px: 2,
+                  borderRadius: 2,
+                  border: '1px solid rgba(255, 255, 255, 0.23)',
+                  '&:hover': {
+                    bgcolor: 'rgba(255, 255, 255, 0.08)',
+                    borderColor: 'white'
+                  }
+                }}
+              >
+                {logoutMutation.isPending ? 'Saindo...' : 'Sair'}
+              </Button>
+            </Tooltip>
           </Box>
 
         </Toolbar>

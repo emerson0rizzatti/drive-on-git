@@ -146,6 +146,11 @@ Antes de iniciar a clonagem, o sistema exibe um resumo:
   1. A clonagem foi 100% bem-sucedida.
   2. A pasta é de propriedade do usuário logado (`ownedByMe: true` via API do Drive).
 - O sistema solicita confirmação explícita antes de deletar: _"Deseja excluir a pasta original do Google Drive para liberar espaço? Esta ação não pode ser desfeita."_
+### RF-12 — Logout de Contas
+- O sistema deve oferecer um botão de "Sair" visível em todas as telas (geralmente na barra superior).
+- Ao clicar em "Sair", o sistema deve encerrar a sessão no backend e limpar as informações de autenticação do Google e GitHub do cliente.
+- O usuário deve ser redirecionado para a tela inicial após o logout.
+- **Regra de negócio:** O logout deve invalidar a sessão atual no backend, garantindo que o acesso seja removido até um novo login.
 
 ---
 
