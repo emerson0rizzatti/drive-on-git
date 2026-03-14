@@ -7,7 +7,7 @@ import { AuthenticatedSession } from '../middleware/authGuard';
 export class CloneController extends BaseController {
   startClone(req: Request, res: Response): void {
     try {
-      const { googleAccessToken, githubAccessToken, githubUser } =
+      const { googleAccessToken, googleRefreshToken, githubAccessToken, githubUser } =
         req.session as AuthenticatedSession;
       const input = startCloneSchema.parse(req.body);
 
@@ -17,6 +17,7 @@ export class CloneController extends BaseController {
         input.repoName,
         googleAccessToken!,
         githubAccessToken!,
+        googleRefreshToken,
       );
 
       this.handleCreated(res, { jobId });

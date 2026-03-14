@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { Box, Typography, Avatar } from '@mui/material';
+import { Box, Typography, Avatar, Alert, AlertTitle } from '@mui/material';
 import React from 'react';
 
 export const Route = createFileRoute('/')({
@@ -10,7 +10,14 @@ export const Route = createFileRoute('/')({
 const AuthFeature = React.lazy(() => import('../features/auth/components/AuthStatusCard'));
 
 function Index() {
+  const [deniedEmail, setDeniedEmail] = React.useState<string | null>(null);
+
   React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('auth') === 'access_denied') {
+      setDeniedEmail(params.get('email'));
+    }
+
     // Drop the ?auth= query param to prevent weird state loops and 'message port closed' warnings
     if (window.location.search.includes('auth=')) {
       window.history.replaceState({}, document.title, window.location.pathname);
@@ -74,6 +81,14 @@ function Index() {
             Siga no Instagram @anitarizzatti
           </Typography>
         </Box>
+
+        {deniedEmail && (
+          <Alert severity="error" sx={{ mt: 2, textAlign: 'left', borderRadius: 2 }}>
+            <AlertTitle>Acesso Negado</AlertTitle>
+            A conta <strong>{deniedEmail}</strong> não tem permissão para acessar este sistema. 
+            Entre em contato com o administrador para solicitar acesso.
+          </Alert>
+        )}
       </Box>
       
       <AuthFeature />

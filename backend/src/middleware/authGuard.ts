@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 export interface AuthenticatedSession {
   googleAccessToken?: string;
+  googleRefreshToken?: string;
   googleUser?: {
     id: string;
     displayName: string;

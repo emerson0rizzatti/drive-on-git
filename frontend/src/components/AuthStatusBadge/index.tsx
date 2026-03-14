@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Chip, Tooltip, keyframes } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import { useAuthStatus } from '../../features/auth/hooks/useAuthStatus';
+import { useAuthStatusSafe } from '../../features/auth/hooks/useAuthStatus';
 
 const pulse = keyframes`
   0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
@@ -11,8 +11,16 @@ const pulse = keyframes`
 `;
 
 export const AuthStatusBadge: React.FC = () => {
-  // Using Suspense-first data fetching via useSuspenseQuery in the hook
-  const { data: status } = useAuthStatus();
+  const { data: status, isLoading, isError } = useAuthStatusSafe();
+
+  if (isLoading || isError || !status) {
+    return (
+      <Box sx={{ display: 'flex', gap: 1, opacity: 0.7 }}>
+        <Chip icon={<GoogleIcon fontSize="small" />} label="Google" variant="outlined" size="small" sx={{ fontWeight: 600 }} />
+        <Chip icon={<GitHubIcon fontSize="small" />} label="GitHub" variant="outlined" size="small" sx={{ fontWeight: 600 }} />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ display: 'flex', gap: 1 }}>

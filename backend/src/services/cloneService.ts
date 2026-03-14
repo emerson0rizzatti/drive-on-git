@@ -11,6 +11,7 @@ export class cloneService {
     repoName: string,
     googleToken: string,
     githubToken: string,
+    googleRefreshToken?: string,
   ): string {
     const jobId = uuidv4();
 
@@ -18,7 +19,7 @@ export class cloneService {
       jobId,
       status: 'pending',
       folderId,
-      ownedByMe: false, // Default will be updated in runJob
+      ownedByMe: false,
       folderName: '',
       repoOwner,
       repoName,
@@ -31,7 +32,7 @@ export class cloneService {
     cloneJobs.set(jobId, job);
 
     // Run async without blocking the response
-    this.runJob(job, googleToken, githubToken).catch((err) => {
+    this.runJob(job, googleToken, githubToken, googleRefreshToken).catch((err) => {
       Sentry.captureException(err);
       job.status = 'failed';
       job.error = err instanceof Error ? err.message : 'Unknown error';
@@ -42,13 +43,28 @@ export class cloneService {
 
   private static async runJob(
     job: CloneJob,
-    googleToken: string,
+    initialGoogleToken: string,
     githubToken: string,
+    googleRefreshToken?: string,
   ): Promise<void> {
     job.status = 'running';
+    let currentGoogleToken = initialGoogleToken;
 
     // 1. Inspect folder to get file list (excluding oversized)
-    const inspection = await driveService.buildInspectionResult(googleToken, job.folderId);
+    // Wrap inspection in retry to handle initial token expiration if needed
+    const startInspection = async () => {
+      try {
+        return await driveService.buildInspectionResult(currentGoogleToken, job.folderId);
+      } catch (err: any) {
+        if (err.response?.status === 401 && googleRefreshToken) {
+          currentGoogleToken = await driveService.refreshAccessToken(googleRefreshToken);
+          return await driveService.buildInspectionResult(currentGoogleToken, job.folderId);
+        }
+        throw err;
+      }
+    };
+
+    const inspection = await startInspection();
     job.folderName = inspection.folderName;
     job.ownedByMe = inspection.ownedByMe;
 
@@ -78,31 +94,42 @@ export class cloneService {
       fileEntry.status = 'uploading';
       job.current = i + 1;
 
-      try {
-        const buffer = await driveService.downloadFile(googleToken, fileEntry.fileId);
-        const existingSha = await githubService.getFileSha(
-          githubToken,
-          job.repoOwner,
-          job.repoName,
-          fileEntry.filePath,
-        );
+      const performFileUpload = async (retry: boolean = true) => {
+        try {
+          const buffer = await driveService.downloadFile(currentGoogleToken, fileEntry.fileId);
+          const existingSha = await githubService.getFileSha(
+            githubToken,
+            job.repoOwner,
+            job.repoName,
+            fileEntry.filePath,
+          );
 
-        await githubService.uploadFile(
-          githubToken,
-          job.repoOwner,
-          job.repoName,
-          fileEntry.filePath,
-          buffer,
-          `Add ${fileEntry.filePath} [Drive on Git]`,
-          existingSha,
-        );
+          await githubService.uploadFile(
+            githubToken,
+            job.repoOwner,
+            job.repoName,
+            fileEntry.filePath,
+            buffer,
+            `Add ${fileEntry.filePath} [Drive on Git]`,
+            existingSha,
+          );
 
-        fileEntry.status = 'done';
-      } catch (err) {
-        Sentry.captureException(err);
-        fileEntry.status = 'error';
-        fileEntry.error = err instanceof Error ? err.message : 'Upload failed';
-      }
+          fileEntry.status = 'done';
+        } catch (err: any) {
+          if (retry && err.response?.status === 401 && googleRefreshToken) {
+            console.log(`[CloneService] Access Token expired during job ${job.jobId}. Refreshing...`);
+            currentGoogleToken = await driveService.refreshAccessToken(googleRefreshToken);
+            await performFileUpload(false); // Retry once with new token
+          } else {
+            console.error(`[CloneService] Error cloning file ${fileEntry.filePath}:`, err.message);
+            Sentry.captureException(err);
+            fileEntry.status = 'error';
+            fileEntry.error = err instanceof Error ? err.message : 'Upload failed';
+          }
+        }
+      };
+
+      await performFileUpload();
     }
 
     job.status = 'completed';

@@ -3,11 +3,24 @@ import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, Ta
 import { useNavigate } from '@tanstack/react-router';
 import { useInspectFolder } from '../hooks/useInspectFolder';
 import LimitWarningBanner from './LimitWarningBanner';
+import SuspenseLoader from '../../../components/SuspenseLoader';
 
 export const FileInspectorReport: React.FC<{ folderId: string }> = ({ folderId }) => {
-  const { data } = useInspectFolder(folderId);
+  const { data, isLoading, isError, error } = useInspectFolder(folderId) as any;
   const navigate = useNavigate();
   const [acknowledgedLimit, setAcknowledgedLimit] = useState(false);
+
+  if (isLoading) return <SuspenseLoader message="Analisando pasta..." />;
+  
+  if (isError || !data) {
+    return (
+      <Paper sx={{ p: 4, textAlign: 'center', border: '1px dashed red' }}>
+        <Typography color="error" gutterBottom>Erro ao inspecionar pasta</Typography>
+        <Typography variant="body2" mb={2}>{(error as any)?.message || 'Ocorreu um erro inesperado.'}</Typography>
+        <Button variant="outlined" onClick={() => window.location.reload()}>Tentar Novamente</Button>
+      </Paper>
+    );
+  }
 
   const canProceed = !data.exceedsRepoLimit || acknowledgedLimit;
 

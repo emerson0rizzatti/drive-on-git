@@ -5,13 +5,34 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { useAuthStatus, authQueryKeys } from '../hooks/useAuthStatus';
+import { useAuthStatusSafe, authQueryKeys } from '../hooks/useAuthStatus';
 import { authApi } from '../api/authApi';
+import { Alert, CircularProgress } from '@mui/material';
 
 export const AuthStatusCard: React.FC = () => {
-  const { data: status } = useAuthStatus();
+  const { data: status, isLoading, isError } = useAuthStatusSafe();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4 }}>
+        <CircularProgress size={24} sx={{ mb: 2 }} />
+        <Typography variant="body2" color="text.secondary">Verificando conexão...</Typography>
+      </Box>
+    );
+  }
+
+  if (isError || !status) {
+    return (
+      <Alert severity="warning" variant="outlined" sx={{ maxWidth: 500, mx: 'auto', borderRadius: 2 }}>
+        <Typography variant="subtitle2" fontWeight={700}>Servidor do Backend Inacessível</Typography>
+        <Typography variant="body2">
+          Não foi possível conectar ao backend. Verifique se o servidor local está rodando na porta 3003 ou se houve uma falha de rede.
+        </Typography>
+      </Alert>
+    );
+  }
 
   const handleGoogleLogin = useCallback(() => {
     window.location.href = authApi.getGoogleLoginUrl();

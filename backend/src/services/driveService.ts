@@ -6,8 +6,10 @@ import {
   InspectedFile,
   FolderInspectionResult,
 } from '../types/DriveFile';
+import { config } from '../config/unifiedConfig';
 
 const DRIVE_API = 'https://www.googleapis.com/drive/v3';
+const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const FILE_SIZE_LIMIT_BYTES = 100 * 1024 * 1024; // 100 MB
 const REPO_SIZE_LIMIT_BYTES = 1024 * 1024 * 1024; // 1 GB
 
@@ -16,6 +18,22 @@ function authHeader(token: string) {
 }
 
 export class driveService {
+  static async refreshAccessToken(refreshToken: string): Promise<string> {
+    console.log('[DriveService] Refreshing Google access token...');
+    try {
+      const response = await axios.post(GOOGLE_TOKEN_URL, {
+        client_id: config.google.clientId,
+        client_secret: config.google.clientSecret,
+        refresh_token: refreshToken,
+        grant_type: 'refresh_token',
+      });
+      return response.data.access_token;
+    } catch (error: any) {
+      console.error('[DriveService] Failed to refresh token:', error.response?.data || error.message);
+      throw new Error('Não foi possível renovar o acesso ao Google Drive. Por favor, faça login novamente.');
+    }
+  }
+
   static async listRootFolders(accessToken: string): Promise<DriveFolder[]> {
     const params = {
       q: "mimeType='application/vnd.google-apps.folder' and 'root' in parents and trashed=false",

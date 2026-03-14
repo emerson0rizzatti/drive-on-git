@@ -24,7 +24,18 @@ export class AuthController extends BaseController {
   }
 
   googleCallback(req: Request, res: Response): void {
-    // After Passport handles OAuth, redirect to frontend
+    const session = req.session as AuthenticatedSession;
+    const userEmail = session.googleUser?.email?.toLowerCase();
+
+    // Enforce allow-list if defined
+    if (config.allowedUsers.length > 0) {
+      if (!userEmail || !config.allowedUsers.includes(userEmail)) {
+        console.warn(`[AuthController] Unauthorized login attempt from: ${userEmail}`);
+        authService.clearSession(session);
+        return res.redirect(`${config.frontend.url}?auth=access_denied&email=${encodeURIComponent(userEmail || '')}`);
+      }
+    }
+
     res.redirect(`${config.frontend.url}?auth=google_success`);
   }
 

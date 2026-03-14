@@ -7,17 +7,22 @@ import { AuthenticatedSession } from '../middleware/authGuard';
 
 export function configurePassport(): void {
   // Google OAuth2 Strategy
-  passport.use(
-    new GoogleStrategy(
-      {
-        clientID: config.google.clientId,
-        clientSecret: config.google.clientSecret,
-        callbackURL: config.google.callbackUrl,
-        passReqToCallback: true,
-      },
-      (req: Request, accessToken: string, _refreshToken: string, _params: GoogleCallbackParameters, profile: GoogleProfile, done: VerifyCallback) => {
+    passport.use(
+      new GoogleStrategy(
+        {
+          clientID: config.google.clientId,
+          clientSecret: config.google.clientSecret,
+          callbackURL: config.google.callbackUrl,
+          passReqToCallback: true,
+          accessType: 'offline',
+          prompt: 'consent',
+        } as any,
+        (req: Request, accessToken: string, refreshToken: string, _params: GoogleCallbackParameters, profile: GoogleProfile, done: VerifyCallback) => {
         const session = (req as any).session as AuthenticatedSession;
         session.googleAccessToken = accessToken;
+        if (refreshToken) {
+          session.googleRefreshToken = refreshToken;
+        }
         session.googleUser = {
           id: profile.id,
           displayName: profile.displayName,

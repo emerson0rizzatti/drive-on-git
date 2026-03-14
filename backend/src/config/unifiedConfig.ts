@@ -12,6 +12,7 @@ const envSchema = z.object({
   GITHUB_CLIENT_SECRET: z.string().min(1, 'GITHUB_CLIENT_SECRET is required'),
   GITHUB_CALLBACK_URL: z.string().min(1, 'GITHUB_CALLBACK_URL is required'),
   SENTRY_DSN: z.string().optional(),
+  ALLOWED_USERS: z.string().optional(),
 });
 
 const envVars = envSchema.parse(process.env);
@@ -24,6 +25,9 @@ export const config = {
   frontend: {
     url: envVars.FRONTEND_URL,
   },
+  allowedUsers: envVars.ALLOWED_USERS 
+    ? envVars.ALLOWED_USERS.split(',').map(email => email.trim().toLowerCase()) 
+    : [],
   google: {
     clientId: envVars.GOOGLE_CLIENT_ID,
     clientSecret: envVars.GOOGLE_CLIENT_SECRET,

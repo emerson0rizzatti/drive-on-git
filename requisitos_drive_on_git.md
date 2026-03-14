@@ -152,6 +152,28 @@ Antes de iniciar a clonagem, o sistema exibe um resumo:
 - O usuário deve ser redirecionado para a tela inicial após o logout.
 - **Regra de negócio:** O logout deve invalidar a sessão atual no backend, garantindo que o acesso seja removido até um novo login.
 
+### RF-13 — Lista de Usuários Permitidos (Allow-list)
+- O sistema deve permitir restringir o acesso apenas a e-mails específicos configurados no servidor através da variável `ALLOWED_USERS`.
+- Caso um usuário autenticado pelo Google não esteja na lista de e-mails permitidos (e a lista não esteja vazia), o sistema deve:
+  1. Revogar a sessão imediatamente.
+  2. Redirecionar para a página inicial.
+  3. Exibir uma mensagem de erro clara: _"Acesso negado: Sua conta [e-mail] não está autorizada. Entre em contato com o administrador."_
+- **Regra de negócio:** Se a variável `ALLOWED_USERS` estiver vazia ou não definida, o sistema aceita qualquer conta autenticada com sucesso pelo Google.
+
+### RF-14 — Resiliência de Sessão e Renovação Automática de Token
+- O sistema deve lidar automaticamente com a expiração de tokens do Google OAuth2 durante processos de longa duração (clonagem de milhares de arquivos).
+- **Regra de negócio:**
+  1. O sistema solicita acesso offline (`access_type: offline`) e prompt de consentimento no login inicial para obter um **Refresh Token**.
+  2. Durante a execução de um job de clonagem, se uma chamada de API retornar erro **401 (Unauthorized)**, o backend deve tentar renovar o `accessToken` usando o `refreshToken` e retomar o processo do ponto onde parou.
+  3. O sistema deve notificar nos logs internos/Sentry quando uma renovação de token ocorrer durante o processamento.
+
+> [!TIP]
+> **Sobre o Status "Em Produção" no Google Cloud:**
+> 1. Mudar para "Produção" remove o limite de 100 usuários e o erro 403 de "App em teste".
+> 2. O custo é **Zero** (OAuth 2.0 é gratuito).
+> 3. O Google exigirá uma **Verificação de Marca** (Logo, Política de Privacidade e vídeo de uso) pois usamos o escopo sensível do Drive.
+> 4. Enquanto não for verificado, os usuários verão um aviso de "App não verificado", mas podem prosseguir clicando em "Avançado".
+
 ---
 
 ## Requisitos Não-Funcionais
