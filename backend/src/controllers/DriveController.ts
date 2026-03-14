@@ -4,12 +4,12 @@ import { driveService } from '../services/driveService';
 import { AuthenticatedSession } from '../middleware/authGuard';
 
 export class DriveController extends BaseController {
-  private getAuthSession(req: Request): AuthenticatedSession {
+  private getAuthSession(req: Request): AuthenticatedSession & { googleAccessToken: string } {
     const session = req.session as AuthenticatedSession | null;
     if (!session || !session.googleAccessToken) {
       throw new Error('Acesso não autorizado: Token do Google ausente na sessão.');
     }
-    return session;
+    return session as AuthenticatedSession & { googleAccessToken: string };
   }
 
   async listFolders(req: Request, res: Response): Promise<void> {
