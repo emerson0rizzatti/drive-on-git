@@ -14,6 +14,19 @@ export const AuthStatusCard: React.FC = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
+  const handleGoogleLogin = useCallback(() => {
+    window.location.href = authApi.getGoogleLoginUrl();
+  }, []);
+
+  const handleGitHubLogin = useCallback(() => {
+    window.location.href = authApi.getGithubLoginUrl();
+  }, []);
+
+  const handleLogout = useCallback(async () => {
+    await authApi.logout();
+    queryClient.invalidateQueries({ queryKey: authQueryKeys.status });
+  }, [queryClient]);
+
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4 }}>
@@ -33,19 +46,6 @@ export const AuthStatusCard: React.FC = () => {
       </Alert>
     );
   }
-
-  const handleGoogleLogin = useCallback(() => {
-    window.location.href = authApi.getGoogleLoginUrl();
-  }, []);
-
-  const handleGitHubLogin = useCallback(() => {
-    window.location.href = authApi.getGithubLoginUrl();
-  }, []);
-
-  const handleLogout = useCallback(async () => {
-    await authApi.logout();
-    queryClient.invalidateQueries({ queryKey: authQueryKeys.status });
-  }, [queryClient]);
 
   const bothConnected = status.google && status.github;
 
