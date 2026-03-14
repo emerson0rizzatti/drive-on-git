@@ -17,6 +17,8 @@ class driveService {
             q: "mimeType='application/vnd.google-apps.folder' and 'root' in parents and trashed=false",
             fields: 'files(id,name,modifiedTime)',
             pageSize: 50,
+            supportsAllDrives: true,
+            includeItemsFromAllDrives: true,
         };
         const { data } = await axios_1.default.get(`${DRIVE_API}/files`, {
             params,
@@ -25,11 +27,14 @@ class driveService {
         return data.files;
     }
     static async listFolderContents(accessToken, folderId, pageToken) {
+        console.log(`[DriveService] Listing contents for folderId: ${folderId}${pageToken ? ' (page: ' + pageToken + ')' : ''}`);
         const params = {
             q: `'${folderId}' in parents and trashed=false`,
             fields: 'nextPageToken,files(id,name,mimeType,size,modifiedTime,parents)',
             pageSize: 100,
             orderBy: 'name',
+            supportsAllDrives: true,
+            includeItemsFromAllDrives: true,
         };
         if (pageToken)
             params.pageToken = pageToken;
@@ -37,6 +42,10 @@ class driveService {
             params,
             headers: authHeader(accessToken),
         });
+        if (!data || !data.files) {
+            console.warn(`[DriveService] No files found for folderId in response: ${folderId}`);
+            return { folders: [], files: [], nextPageToken: undefined };
+        }
         const folders = [];
         const files = [];
         for (const item of data.files) {
@@ -51,13 +60,20 @@ class driveService {
     }
     static async getFolderName(accessToken, folderId) {
         const { data } = await axios_1.default.get(`${DRIVE_API}/files/${folderId}`, {
-            params: { fields: 'name' },
+            params: {
+                fields: 'name',
+                supportsAllDrives: true
+            },
             headers: authHeader(accessToken),
         });
         return data.name;
     }
     // Recursively inspect all files in a folder
-    static async inspectFolder(accessToken, folderId, basePath = '') {
+    static async inspectFolder(accessToken, folderId, basePath = '', depth = 0) {
+        if (depth > 10) {
+            console.warn(`[DriveService] Max depth reached at ${basePath}. Skipping deeper traversal.`);
+            return [];
+        }
         const results = [];
         let pageToken;
         do {
@@ -65,6 +81,8 @@ class driveService {
             pageToken = contents.nextPageToken;
             // Process files
             for (const file of contents.files) {
+                if (!file.id || !file.name)
+                    continue;
                 const sizeBytes = parseInt(String(file.size ?? '0'), 10);
                 const sizeMB = sizeBytes / (1024 * 1024);
                 const filePath = basePath ? `${basePath}/${file.name}` : file.name;
@@ -74,22 +92,33 @@ class driveService {
                     path: filePath,
                     sizeBytes,
                     sizeMB: parseFloat(sizeMB.toFixed(2)),
-                    mimeType: file.mimeType,
+                    mimeType: file.mimeType || 'unknown',
                     oversized: sizeBytes > FILE_SIZE_LIMIT_BYTES,
                 });
             }
             // Recurse into subfolders
             for (const folder of contents.folders) {
+                if (!folder.id || !folder.name)
+                    continue;
                 const subPath = basePath ? `${basePath}/${folder.name}` : folder.name;
-                const subFiles = await this.inspectFolder(accessToken, folder.id, subPath);
-                results.push(...subFiles);
+                try {
+                    const subFiles = await this.inspectFolder(accessToken, folder.id, subPath, depth + 1);
+                    results.push(...subFiles);
+                }
+                catch (err) {
+                    console.error(`[DriveService] Failed to inspect subfolder ${subPath} (${folder.id}):`, err);
+                    // Continue with other folders instead of failing entire inspection
+                }
             }
         } while (pageToken);
         return results;
     }
     static async buildInspectionResult(accessToken, folderId) {
+        console.log(`[DriveService] Starting inspection for folder: ${folderId}`);
         const folderName = await this.getFolderName(accessToken, folderId);
+        console.log(`[DriveService] Folder name: ${folderName}`);
         const allFiles = await this.inspectFolder(accessToken, folderId);
+        console.log(`[DriveService] Inspection complete. Found ${allFiles.length} files.`);
         const validFiles = allFiles.filter((f) => !f.oversized);
         const oversizedFiles = allFiles.filter((f) => f.oversized);
         const totalSizeBytes = allFiles.reduce((acc, f) => acc + f.sizeBytes, 0);
@@ -108,7 +137,10 @@ class driveService {
     // Download a file as a Buffer
     static async downloadFile(accessToken, fileId) {
         const { data } = await axios_1.default.get(`${DRIVE_API}/files/${fileId}`, {
-            params: { alt: 'media' },
+            params: {
+                alt: 'media',
+                supportsAllDrives: true
+            },
             headers: authHeader(accessToken),
             responseType: 'arraybuffer',
         });

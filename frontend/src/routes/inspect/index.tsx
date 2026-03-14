@@ -2,6 +2,7 @@ import { createFileRoute, notFound } from '@tanstack/react-router';
 import { Box } from '@mui/material';
 import React from 'react';
 import SuspenseLoader from '../../components/SuspenseLoader';
+import InspectorErrorComponent from '../../features/file-inspector/components/InspectorErrorComponent';
 
 const FileInspectorReport = React.lazy(() => import('../../features/file-inspector/components/FileInspectorReport'));
 
@@ -11,6 +12,7 @@ type SearchParams = {
 
 export const Route = createFileRoute('/inspect/')({
   component: InspectPage,
+  errorComponent: InspectorErrorComponent,
   validateSearch: (search: Record<string, unknown>): SearchParams => {
     if (typeof search.folderId !== 'string') {
       throw notFound();

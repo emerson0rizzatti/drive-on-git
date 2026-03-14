@@ -29,11 +29,43 @@ class CloneController extends BaseController_1.BaseController {
         res.setHeader('Connection', 'keep-alive');
         res.flushHeaders();
         const sendEvent = () => {
-            const current = cloneService_1.cloneService.getJob(jobId);
-            if (!current)
+            const job = cloneService_1.cloneService.getJob(jobId);
+            if (!job)
                 return;
-            res.write(`data: ${JSON.stringify(current)}\n\n`);
-            if (current.status === 'completed' || current.status === 'failed') {
+            const successfulFiles = job.files.filter(f => f.status === 'done').length;
+            const failedFiles = job.files.filter(f => f.status === 'error').length;
+            const skippedFiles = job.files.filter(f => f.status === 'skipped').length;
+            const currentFile = job.files.find(f => f.status === 'uploading')?.filePath;
+            // Map backend status to frontend status
+            let frontendStatus = 'pending';
+            if (job.status === 'running') {
+                frontendStatus = job.total === 0 ? 'inspecting' : 'processing';
+            }
+            else if (job.status === 'completed') {
+                frontendStatus = 'completed';
+            }
+            else if (job.status === 'failed') {
+                frontendStatus = 'failed';
+            }
+            const formattedStatus = {
+                jobId: job.jobId,
+                folderId: job.folderId,
+                repoOwner: job.repoOwner,
+                repoName: job.repoName,
+                status: frontendStatus,
+                progress: {
+                    totalFiles: job.total,
+                    processedFiles: job.current,
+                    successfulFiles,
+                    failedFiles,
+                    skippedFiles,
+                    currentFile,
+                },
+                errors: job.files.filter(f => f.error).map(f => `${f.filePath}: ${f.error}`),
+                createdAt: job.startedAt.toISOString(),
+            };
+            res.write(`data: ${JSON.stringify(formattedStatus)}\n\n`);
+            if (job.status === 'completed' || job.status === 'failed') {
                 res.end();
                 clearInterval(interval);
             }

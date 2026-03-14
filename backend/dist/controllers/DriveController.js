@@ -4,9 +4,16 @@ exports.driveController = exports.DriveController = void 0;
 const BaseController_1 = require("./BaseController");
 const driveService_1 = require("../services/driveService");
 class DriveController extends BaseController_1.BaseController {
+    getAuthSession(req) {
+        const session = req.session;
+        if (!session || !session.googleAccessToken) {
+            throw new Error('Acesso não autorizado: Token do Google ausente na sessão.');
+        }
+        return session;
+    }
     async listFolders(req, res) {
         try {
-            const { googleAccessToken } = req.session;
+            const { googleAccessToken } = this.getAuthSession(req);
             const folders = await driveService_1.driveService.listRootFolders(googleAccessToken);
             this.handleSuccess(res, folders);
         }
@@ -16,7 +23,7 @@ class DriveController extends BaseController_1.BaseController {
     }
     async listFolderContents(req, res) {
         try {
-            const { googleAccessToken } = req.session;
+            const { googleAccessToken } = this.getAuthSession(req);
             const { id } = req.params;
             const { pageToken } = req.query;
             const contents = await driveService_1.driveService.listFolderContents(googleAccessToken, id, pageToken);
@@ -28,7 +35,7 @@ class DriveController extends BaseController_1.BaseController {
     }
     async inspectFolder(req, res) {
         try {
-            const { googleAccessToken } = req.session;
+            const { googleAccessToken } = this.getAuthSession(req);
             const { id } = req.params;
             const result = await driveService_1.driveService.buildInspectionResult(googleAccessToken, id);
             this.handleSuccess(res, result);

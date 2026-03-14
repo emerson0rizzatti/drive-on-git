@@ -17,7 +17,7 @@ class AuthController extends BaseController_1.BaseController {
     logout(req, res) {
         try {
             authService_1.authService.clearSession(req.session);
-            this.handleSuccess(res, { message: 'Logged out successfully' });
+            this.handleSuccess(res, { message: 'Sessão encerrada com sucesso' });
         }
         catch (error) {
             this.handleError(error, res, 'logout');

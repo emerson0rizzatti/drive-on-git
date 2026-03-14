@@ -2,32 +2,40 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.config = void 0;
 require("dotenv/config");
-function requireEnv(key) {
-    const value = process.env[key];
-    if (!value)
-        throw new Error(`Missing required environment variable: ${key}`);
-    return value;
-}
+const zod_1 = require("zod");
+const envSchema = zod_1.z.object({
+    PORT: zod_1.z.string().default('3001'),
+    SESSION_SECRET: zod_1.z.string().min(1, 'SESSION_SECRET is required'),
+    FRONTEND_URL: zod_1.z.string().default('http://localhost:5173'),
+    GOOGLE_CLIENT_ID: zod_1.z.string().min(1, 'GOOGLE_CLIENT_ID is required'),
+    GOOGLE_CLIENT_SECRET: zod_1.z.string().min(1, 'GOOGLE_CLIENT_SECRET is required'),
+    GOOGLE_CALLBACK_URL: zod_1.z.string().min(1, 'GOOGLE_CALLBACK_URL is required'),
+    GITHUB_CLIENT_ID: zod_1.z.string().min(1, 'GITHUB_CLIENT_ID is required'),
+    GITHUB_CLIENT_SECRET: zod_1.z.string().min(1, 'GITHUB_CLIENT_SECRET is required'),
+    GITHUB_CALLBACK_URL: zod_1.z.string().min(1, 'GITHUB_CALLBACK_URL is required'),
+    SENTRY_DSN: zod_1.z.string().optional(),
+});
+const envVars = envSchema.parse(process.env);
 exports.config = {
-    port: parseInt(process.env.PORT || '3001', 10),
+    port: parseInt(envVars.PORT, 10),
     session: {
-        secret: requireEnv('SESSION_SECRET'),
+        secret: envVars.SESSION_SECRET,
     },
     frontend: {
-        url: process.env.FRONTEND_URL || 'http://localhost:5173',
+        url: envVars.FRONTEND_URL,
     },
     google: {
-        clientId: requireEnv('GOOGLE_CLIENT_ID'),
-        clientSecret: requireEnv('GOOGLE_CLIENT_SECRET'),
-        callbackUrl: requireEnv('GOOGLE_CALLBACK_URL'),
+        clientId: envVars.GOOGLE_CLIENT_ID,
+        clientSecret: envVars.GOOGLE_CLIENT_SECRET,
+        callbackUrl: envVars.GOOGLE_CALLBACK_URL,
     },
     github: {
-        clientId: requireEnv('GITHUB_CLIENT_ID'),
-        clientSecret: requireEnv('GITHUB_CLIENT_SECRET'),
-        callbackUrl: requireEnv('GITHUB_CALLBACK_URL'),
+        clientId: envVars.GITHUB_CLIENT_ID,
+        clientSecret: envVars.GITHUB_CLIENT_SECRET,
+        callbackUrl: envVars.GITHUB_CALLBACK_URL,
     },
     sentry: {
-        dsn: process.env.SENTRY_DSN || '',
+        dsn: envVars.SENTRY_DSN || '',
     },
 };
 //# sourceMappingURL=unifiedConfig.js.map

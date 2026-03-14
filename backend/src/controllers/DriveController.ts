@@ -4,10 +4,18 @@ import { driveService } from '../services/driveService';
 import { AuthenticatedSession } from '../middleware/authGuard';
 
 export class DriveController extends BaseController {
+  private getAuthSession(req: Request): AuthenticatedSession {
+    const session = req.session as AuthenticatedSession | null;
+    if (!session || !session.googleAccessToken) {
+      throw new Error('Acesso não autorizado: Token do Google ausente na sessão.');
+    }
+    return session;
+  }
+
   async listFolders(req: Request, res: Response): Promise<void> {
     try {
-      const { googleAccessToken } = req.session as AuthenticatedSession;
-      const folders = await driveService.listRootFolders(googleAccessToken!);
+      const { googleAccessToken } = this.getAuthSession(req);
+      const folders = await driveService.listRootFolders(googleAccessToken);
       this.handleSuccess(res, folders);
     } catch (error) {
       this.handleError(error, res, 'listFolders');
@@ -16,10 +24,10 @@ export class DriveController extends BaseController {
 
   async listFolderContents(req: Request, res: Response): Promise<void> {
     try {
-      const { googleAccessToken } = req.session as AuthenticatedSession;
+      const { googleAccessToken } = this.getAuthSession(req);
       const { id } = req.params as { id: string };
       const { pageToken } = req.query as { pageToken?: string };
-      const contents = await driveService.listFolderContents(googleAccessToken!, id, pageToken);
+      const contents = await driveService.listFolderContents(googleAccessToken, id, pageToken);
       this.handleSuccess(res, contents);
     } catch (error) {
       this.handleError(error, res, 'listFolderContents');
@@ -28,9 +36,9 @@ export class DriveController extends BaseController {
 
   async inspectFolder(req: Request, res: Response): Promise<void> {
     try {
-      const { googleAccessToken } = req.session as AuthenticatedSession;
+      const { googleAccessToken } = this.getAuthSession(req);
       const { id } = req.params as { id: string };
-      const result = await driveService.buildInspectionResult(googleAccessToken!, id);
+      const result = await driveService.buildInspectionResult(googleAccessToken, id);
       this.handleSuccess(res, result);
     } catch (error) {
       this.handleError(error, res, 'inspectFolder');

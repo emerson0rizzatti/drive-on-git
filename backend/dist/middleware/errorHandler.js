@@ -37,7 +37,7 @@ exports.errorHandler = errorHandler;
 const Sentry = __importStar(require("@sentry/node"));
 function errorHandler(err, _req, res, _next) {
     Sentry.captureException(err);
-    console.error('[ErrorHandler]', err.message);
+    console.error('[ErrorHandler] Error Details:', err);
     res.status(500).json({ error: 'Internal server error', message: err.message });
 }
 //# sourceMappingURL=errorHandler.js.map
