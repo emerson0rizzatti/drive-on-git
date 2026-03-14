@@ -7,4 +7,7 @@ export const inspectorApi = {
     const { data } = await axiosInstance.get(`/drive/inspect/${folderId}`);
     return data.data;
   },
+  deleteFolder: async (folderId: string): Promise<void> => {
+    await axiosInstance.delete(`/drive/folders/${folderId}`);
+  },
 };

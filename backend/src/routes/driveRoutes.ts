@@ -24,4 +24,10 @@ router.get(
   asyncErrorWrapper((req, res) => driveController.inspectFolder(req, res))
 );
 
+router.delete(
+  '/folders/:id',
+  validateRequest(z.object({ params: driveFolderIdSchema })),
+  asyncErrorWrapper((req, res) => driveController.deleteFolder(req, res))
+);
+
 export default router;

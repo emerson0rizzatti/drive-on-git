@@ -11,6 +11,7 @@ export interface InspectedFile {
 export interface FolderInspectionResult {
   folderId: string;
   folderName: string;
+  ownedByMe: boolean;
   totalFiles: number;
   totalSizeBytes: number;
   totalSizeMB: number;

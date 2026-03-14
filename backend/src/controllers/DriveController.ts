@@ -44,6 +44,24 @@ export class DriveController extends BaseController {
       this.handleError(error, res, 'inspectFolder');
     }
   }
+
+  async deleteFolder(req: Request, res: Response): Promise<void> {
+    try {
+      const { googleAccessToken } = this.getAuthSession(req);
+      const { id } = req.params as { id: string };
+      
+      // Safety check: verify ownership again before deletion
+      const { ownedByMe } = await driveService.getFolderMetadata(googleAccessToken, id);
+      if (!ownedByMe) {
+        return this.handleError(new Error('Apenas o proprietário da pasta tem permissão para excluí-la.'), res, 'deleteFolder');
+      }
+
+      await driveService.deleteFolder(googleAccessToken, id);
+      this.handleSuccess(res, { message: 'Pasta excluída com sucesso.' });
+    } catch (error) {
+      this.handleError(error, res, 'deleteFolder');
+    }
+  }
 }
 
 export const driveController = new DriveController();

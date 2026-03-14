@@ -1,6 +1,8 @@
 export interface CloneJobStatus {
   jobId: string;
   folderId: string;
+  folderName: string;
+  ownedByMe?: boolean;
   repoOwner: string;
   repoName: string;
   status: 'pending' | 'inspecting' | 'processing' | 'completed' | 'failed';

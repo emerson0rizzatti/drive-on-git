@@ -139,6 +139,14 @@ Antes de iniciar a clonagem, o sistema exibe um resumo:
 - Ações disponíveis: abrir no GitHub (nova aba)
 - **Regra de negócio:** A listagem é feita em tempo real via GitHub API (sem cache local/banco de dados)
 
+### RF-11 — Exclusão da Pasta de Origem (Opcional)
+- Após a conclusão bem-sucedida da clonagem, o sistema deve verificar se o usuário autenticado é o proprietário da pasta original no Google Drive.
+- Caso o usuário seja o proprietário, o sistema deve oferecer a opção de excluir a pasta do Drive para liberar espaço.
+- **Regra de negócio:** A funcionalidade de exclusão só deve ser exibida se:
+  1. A clonagem foi 100% bem-sucedida.
+  2. A pasta é de propriedade do usuário logado (`ownedByMe: true` via API do Drive).
+- O sistema solicita confirmação explícita antes de deletar: _"Deseja excluir a pasta original do Google Drive para liberar espaço? Esta ação não pode ser desfeita."_
+
 ---
 
 ## Requisitos Não-Funcionais
@@ -275,6 +283,7 @@ src/
 | `/github/repos` | POST | Cria novo repositório |
 | `/clone/start` | POST | Inicia processo de clonagem |
 | `/clone/status/:jobId` | GET | Status do job de clonagem (SSE ou polling) |
+| `/drive/folders/:id` | DELETE | Exclui uma pasta do Drive (após verificação de ownership) |
 
 ---
 

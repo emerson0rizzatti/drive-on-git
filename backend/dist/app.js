@@ -59,6 +59,7 @@ app.use((0, cors_1.default)({
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 // --- Session (cookie-based, no DB) ---
+app.set('trust proxy', 1); // Trust first proxy (Render Load Balancer) for secure cookies
 app.use((0, cookie_session_1.default)({
     name: 'dog_session', // Drive on Git session
     keys: [unifiedConfig_1.config.session.secret],

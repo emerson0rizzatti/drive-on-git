@@ -10,6 +10,7 @@ export interface CloneJob {
     jobId: string;
     status: CloneStatus;
     folderId: string;
+    ownedByMe: boolean;
     folderName: string;
     repoOwner: string;
     repoName: string;

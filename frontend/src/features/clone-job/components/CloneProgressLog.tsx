@@ -1,13 +1,17 @@
 import React from 'react';
-import { Box, Typography, LinearProgress, Paper, List, ListItem, ListItemText, ListItemIcon, Divider, Chip } from '@mui/material';
+import { Box, Typography, LinearProgress, Paper, List, ListItem, ListItemText, ListItemIcon, Divider, Chip, Button } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { useCloneProgress } from '../hooks/useCloneJob';
 import { Link } from '@tanstack/react-router';
+import { DeleteFolderDialog } from './DeleteFolderDialog';
+import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 
 export const CloneProgressLog: React.FC<{ jobId: string }> = ({ jobId }) => {
   const { status, error } = useCloneProgress(jobId);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [isDeleted, setIsDeleted] = React.useState(false);
 
   if (error) {
     return (
@@ -88,13 +92,43 @@ export const CloneProgressLog: React.FC<{ jobId: string }> = ({ jobId }) => {
       )}
 
       {isDone && (
-        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
-          <Link to="/my-repos" style={{ textDecoration: 'none' }}>
-            <Typography variant="button" sx={{ bgcolor: 'primary.main', color: 'white', px: 4, py: 1.5, borderRadius: 2, fontWeight: 600 }}>
-              Ir para Meus Repositórios
+        <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Link to="/my-repos" style={{ textDecoration: 'none' }}>
+              <Typography variant="button" sx={{ bgcolor: 'primary.main', color: 'white', px: 4, py: 1.5, borderRadius: 2, fontWeight: 600, cursor: 'pointer', display: 'inline-block' }}>
+                Ir para Meus Repositórios
+              </Typography>
+            </Link>
+
+            {jobStatus === 'completed' && status.ownedByMe && !isDeleted && (
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={<DeleteSweepIcon />}
+                onClick={() => setDeleteDialogOpen(true)}
+                sx={{ borderRadius: 2, px: 3, fontWeight: 600 }}
+              >
+                Excluir Pasta Original
+              </Button>
+            )}
+          </Box>
+
+          {isDeleted && (
+            <Typography variant="body2" color="success.main" fontWeight={600}>
+              Pasta original excluída com sucesso!
             </Typography>
-          </Link>
+          )}
         </Box>
+      )}
+
+      {status && (
+        <DeleteFolderDialog
+          open={deleteDialogOpen}
+          onClose={() => setDeleteDialogOpen(false)}
+          folderId={status.folderId}
+          folderName={status.folderName}
+          onSuccess={() => setIsDeleted(true)}
+        />
       )}
 
     </Box>

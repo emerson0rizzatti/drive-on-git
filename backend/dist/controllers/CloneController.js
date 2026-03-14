@@ -50,6 +50,8 @@ class CloneController extends BaseController_1.BaseController {
             const formattedStatus = {
                 jobId: job.jobId,
                 folderId: job.folderId,
+                folderName: job.folderName,
+                ownedByMe: job.ownedByMe,
                 repoOwner: job.repoOwner,
                 repoName: job.repoName,
                 status: frontendStatus,

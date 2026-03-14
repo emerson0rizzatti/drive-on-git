@@ -71,15 +71,18 @@ export class driveService {
     return { folders, files, nextPageToken: data.nextPageToken };
   }
 
-  static async getFolderName(accessToken: string, folderId: string): Promise<string> {
+  static async getFolderMetadata(accessToken: string, folderId: string): Promise<{ name: string; ownedByMe: boolean }> {
     const { data } = await axios.get(`${DRIVE_API}/files/${folderId}`, {
       params: { 
-        fields: 'name',
+        fields: 'name,ownedByMe',
         supportsAllDrives: true 
       },
       headers: authHeader(accessToken),
     });
-    return data.name as string;
+    return { 
+      name: data.name as string, 
+      ownedByMe: !!data.ownedByMe 
+    };
   }
 
   // Recursively inspect all files in a folder
@@ -143,8 +146,8 @@ export class driveService {
     folderId: string,
   ): Promise<FolderInspectionResult> {
     console.log(`[DriveService] Starting inspection for folder: ${folderId}`);
-    const folderName = await this.getFolderName(accessToken, folderId);
-    console.log(`[DriveService] Folder name: ${folderName}`);
+    const { name: folderName, ownedByMe } = await this.getFolderMetadata(accessToken, folderId);
+    console.log(`[DriveService] Folder name: ${folderName}, OwnedByMe: ${ownedByMe}`);
     const allFiles = await this.inspectFolder(accessToken, folderId);
     console.log(`[DriveService] Inspection complete. Found ${allFiles.length} files.`);
 
@@ -156,6 +159,7 @@ export class driveService {
     return {
       folderId,
       folderName,
+      ownedByMe,
       totalFiles: allFiles.length,
       totalSizeBytes,
       totalSizeMB: parseFloat((totalSizeBytes / (1024 * 1024)).toFixed(2)),
@@ -176,5 +180,12 @@ export class driveService {
       responseType: 'arraybuffer',
     });
     return Buffer.from(data);
+  }
+
+  static async deleteFolder(accessToken: string, folderId: string): Promise<void> {
+    await axios.delete(`${DRIVE_API}/files/${folderId}`, {
+      params: { supportsAllDrives: true },
+      headers: authHeader(accessToken),
+    });
   }
 }

@@ -46,6 +46,7 @@ class cloneService {
             jobId,
             status: 'pending',
             folderId,
+            ownedByMe: false, // Default will be updated in runJob
             folderName: '',
             repoOwner,
             repoName,
@@ -68,6 +69,7 @@ class cloneService {
         // 1. Inspect folder to get file list (excluding oversized)
         const inspection = await driveService_1.driveService.buildInspectionResult(googleToken, job.folderId);
         job.folderName = inspection.folderName;
+        job.ownedByMe = inspection.ownedByMe;
         const filesToClone = inspection.validFiles;
         job.total = filesToClone.length;
         job.files = filesToClone.map((f) => ({
