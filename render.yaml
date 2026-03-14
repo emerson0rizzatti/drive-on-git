@@ -8,6 +8,8 @@ services:
     buildCommand: npm install --include=dev && npm run build
     startCommand: npm start
     envVars:
+      - key: NODE_VERSION
+        value: 22.22.0
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: GOOGLE_CLIENT_SECRET
@@ -38,6 +40,8 @@ services:
     buildCommand: npm install --include=dev && npm run build
     staticPublishPath: dist
     envVars:
+      - key: NODE_VERSION
+        value: 22.22.0
       - key: VITE_API_URL
         fromService:
           type: web

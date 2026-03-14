@@ -10,6 +10,13 @@ export const Route = createFileRoute('/')({
 const AuthFeature = React.lazy(() => import('../features/auth/components/AuthStatusCard'));
 
 function Index() {
+  React.useEffect(() => {
+    // Drop the ?auth= query param to prevent weird state loops and 'message port closed' warnings
+    if (window.location.search.includes('auth=')) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center', py: 8 }}>
       <Box textAlign="center">

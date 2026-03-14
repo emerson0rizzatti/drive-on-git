@@ -29,6 +29,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // --- Session (cookie-based, no DB) ---
+app.set('trust proxy', 1); // Trust first proxy (Render Load Balancer) for secure cookies
 app.use(
   cookieSession({
     name: 'dog_session', // Drive on Git session
