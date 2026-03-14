@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Button, Alert, AlertTitle } from '@mui/material';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Button } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 import { useInspectFolder } from '../hooks/useInspectFolder';
 import LimitWarningBanner from './LimitWarningBanner';
